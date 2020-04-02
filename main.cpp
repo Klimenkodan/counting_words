@@ -1,3 +1,6 @@
+///------------------------------------------------------------------------------------------------------------------///
+/// INCLUDES
+
 #include <iostream>
 #include <fstream>
 #include <ostream>
@@ -5,6 +8,60 @@
 #include <map>
 #include <archive.h>
 #include <archive_entry.h>
+#include <string>
+#include <tuple>
+#include <vector>
+
+///------------------------------------------------------------------------------------------------------------------///
+/// CONFIG FUNCTIONS
+
+std::string parseConf(std::string line) {
+    std::string res = "";
+    bool flag = false;
+    for (auto c=line.begin(); c != line.end(); c++) {
+        if (flag && *c != '"') {
+            res += *c;
+        }
+        if (*c == '=') {
+            flag = true;
+        }
+    }
+    return res;
+}
+
+
+std::tuple<std::string, std::string, std::string, int> configurate(std::string filename) {
+    std::ifstream conf(filename);
+    std::string line;
+    std::tuple<std::string, std::string, std::string, int> res = std::make_tuple("///","///","///",-1);
+    if (conf.is_open()) {
+        std::getline(conf, line);
+        std::get<0>(res) = parseConf(line);
+
+        std::getline(conf, line);
+        std::get<1>(res) = parseConf(line);
+
+        std::getline(conf, line);
+        std::get<2>(res) = parseConf(line);
+
+        std::getline(conf, line);
+        try {
+            std::get<3>(res) = std::stoi(parseConf(line));
+        } catch(std::exception&) {
+            std::cout << "\nstoi Error\n\n";
+            std::get<3>(res) = 1;
+        }
+    }
+    return res;
+}
+
+
+bool validateConfigs(std::tuple<std::string, std::string, std::string, int> configs) {
+    return (std::get<0>(configs) != "///") && (std::get<1>(configs) != "///") && (std::get<2>(configs) != "///") && (std::get<3>(configs) != -1);
+}
+
+///------------------------------------------------------------------------------------------------------------------///
+/// FILE READING FUNCTIONS
 
 auto inline read_file_into_memory(const std::string &file_name) {
 
@@ -15,6 +72,10 @@ auto inline read_file_into_memory(const std::string &file_name) {
 	return buffer;
 
 }
+
+///------------------------------------------------------------------------------------------------------------------///
+/// MAIN PROGRAM
+
 int main() {
 
 	std::string file = "file.zip";
@@ -31,3 +92,5 @@ int main() {
 //	std::cout << new_map["key"] << std::endl;
 //	return 0;
 }
+
+///------------------------------------------------------------------------------------------------------------------///

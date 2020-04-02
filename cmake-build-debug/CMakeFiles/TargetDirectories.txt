@@ -1,3 +1,0 @@
-/home/dan/Documents/Second_year/CSA/counting_words1/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/home/dan/Documents/Second_year/CSA/counting_words1/cmake-build-debug/CMakeFiles/counting_words1.dir
-/home/dan/Documents/Second_year/CSA/counting_words1/cmake-build-debug/CMakeFiles/edit_cache.dir
