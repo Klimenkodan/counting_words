@@ -1,5 +1,14 @@
-/opt/clion-2019.3/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/vlad/Desktop/2_year/ACS/lab_3/a/counting_words
--- Found Boost: /usr/local/lib/cmake/Boost-1.72.0/BoostConfig.cmake (found version "1.72.0") found components:  filesystem locale system 
+/home/romanblahuta/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/193.6015.37/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/romanblahuta/UCU/Programming/AKC/count_words
+-- Found LibArchive: /usr/lib/x86_64-linux-gnu/libarchive.so (found version "3.4.0") 
+-- Looking for pthread.h
+-- Looking for pthread.h - found
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Failed
+-- Looking for pthread_create in pthreads
+-- Looking for pthread_create in pthreads - not found
+-- Looking for pthread_create in pthread
+-- Looking for pthread_create in pthread - found
+-- Found Threads: TRUE  
 -- Configuring done
 -- Generating done
--- Build files have been written to: /home/vlad/Desktop/2_year/ACS/lab_3/a/counting_words/cmake-build-debug
+-- Build files have been written to: /home/romanblahuta/UCU/Programming/AKC/count_words/cmake-build-debug

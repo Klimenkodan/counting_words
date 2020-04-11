@@ -80,6 +80,33 @@ auto inline read_file_into_memory(const std::string &file_name) {
 
 }
 
+
+template <typename CharT, typename Traits,
+        typename Allocator = std::allocator<CharT>>
+
+auto read_txt_into_memory(std::basic_ifstream<CharT, Traits>& in, Allocator alloc = {})
+{
+    using std::begin;
+    using std::end;
+
+    auto const chunk_size = std::size_t{BUFSIZ};
+
+    auto container = std::vector<CharT, Allocator>(
+            std::move(alloc));
+
+    auto chunk = std::array<char, chunk_size>{};
+
+    while (
+            in.read(chunk.data(), chunk.size()) ||
+            in.gcount())
+        container.insert(end(container),
+                         begin(chunk),
+                         begin(chunk) + in.gcount());
+
+    return container;
+}
+
+
 //--------------------------------------------------------------------------------------------------------------------//
 
 auto read_txt( const std::string &file_name ){
@@ -126,7 +153,7 @@ auto count_words( boost::locale::boundary::ssegment_index &words_list ){
 auto trigger_function(){
 //    one thread function
 
-    std::string tex = read_txt("/home/vlad/Desktop/2_year/ACS/lab_3/a/counting_words/file1.txt"); // your filepath here
+    std::string tex = read_txt("../file1.txt"); // your filepath here
     auto txts = slice_text(tex);
     auto dick = count_words(txts);
 

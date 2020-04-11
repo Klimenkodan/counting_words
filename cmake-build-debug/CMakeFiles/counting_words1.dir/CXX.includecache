@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/home/vlad/Desktop/2_year/ACS/lab_3/a/counting_words/main.cpp
+/home/romanblahuta/UCU/Programming/AKC/count_words/main.cpp
 iostream
 -
 fstream
