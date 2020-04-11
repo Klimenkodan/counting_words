@@ -1,0 +1,40 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/vlad/Desktop/2_year/ACS/lab_3/a/counting_words/main.cpp
+iostream
+-
+fstream
+-
+ostream
+-
+sstream
+-
+map
+-
+archive.h
+-
+archive_entry.h
+-
+string
+-
+tuple
+-
+vector
+-
+boost/locale.hpp
+-
+boost/locale/boundary.hpp
+-
+boost/locale/conversion.hpp
+-
+fstream
+-
+map
+-
+

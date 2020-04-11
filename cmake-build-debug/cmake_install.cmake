@@ -1,4 +1,4 @@
-# Install script for directory: /home/dan/Documents/Second_year/CSA/counting_words1
+# Install script for directory: /home/vlad/Desktop/2_year/ACS/lab_3/a/counting_words
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -45,5 +45,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/dan/Documents/Second_year/CSA/counting_words1/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/vlad/Desktop/2_year/ACS/lab_3/a/counting_words/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

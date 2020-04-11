@@ -3,10 +3,12 @@ project(untitled)
 
 set(CMAKE_CXX_STANDARD 14)
 
-#set(Boost_USE_MULTITHREADED ON)
-#
-#find_package(Boost REQUIRED COMPONENTS filesystem locale system)
-#
+set(Boost_USE_MULTITHREADED ON)
+
+set(CMAKE_CXX_STANDARD_LIBRARIES -lboost_locale)
+
+find_package(Boost REQUIRED COMPONENTS filesystem locale system)
+
 find_package(LibArchive REQUIRED)
 find_package(Threads REQUIRED)
 
