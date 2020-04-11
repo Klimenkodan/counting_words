@@ -82,6 +82,24 @@ auto inline read_file_into_memory(const std::string &file_name) {
 
 //--------------------------------------------------------------------------------------------------------------------//
 
+auto read_txt( const std::string &file_name ){
+    std::string content, word;
+    std::ifstream file;
+
+    file.open(file_name);
+    if (!file) {
+        std::cout << "Unable to open file";
+        exit(1);
+    }
+
+    while (file >> word) {
+        content += word + " ";
+    }
+
+    file.close();
+    return content;
+}
+
 auto slice_text(std::string &text){
 
     boost::locale::generator gen;
@@ -105,10 +123,10 @@ auto count_words( boost::locale::boundary::ssegment_index &words_list ){
     return dictionary;
 }
 
-auto trigger_funtion(){
+auto trigger_function(){
 //    one thread function
 
-    std::string tex = read_file_into_memory("/home/vlad/Desktop/2_year/ACS/lab_3/a/counting_words/file1.txt"); // your filepath here
+    std::string tex = read_txt("/home/vlad/Desktop/2_year/ACS/lab_3/a/counting_words/file1.txt"); // your filepath here
     auto txts = slice_text(tex);
     auto dick = count_words(txts);
 
@@ -121,14 +139,17 @@ auto trigger_funtion(){
 /// MAIN PROGRAM
 
 int main() {
-    trigger_funtion();
 
-//	std::string file = "file.zip";
+    trigger_function();
+
+//	std::string file = "/home/vlad/Desktop/2_year/ACS/lab_3/a/counting_words/file.zip";
 //	auto buf = read_file_into_memory(file);
 //	struct archive *a = archive_read_new();
 //	archive_read_support_compression_gzip(a);
 //	archive_read_support_format_tar(a);
-//	r = archive_read_open_memory(a, buff, sizeof(buff));
+//	auto r = archive_read_open_memory(a, buf, sizeof(buf));
+
+
 //	std::cout << buf << std::endl;
 
 //	std::map<std::string, int> new_map;
