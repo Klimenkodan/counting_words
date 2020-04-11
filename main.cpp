@@ -106,8 +106,23 @@ auto read_txt_into_memory(std::basic_ifstream<CharT, Traits>& in, Allocator allo
     return container;
 }
 
+std::string file_as_str(std::vector<char> file_as_chars) {
+    std::string data = "";
 
-//--------------------------------------------------------------------------------------------------------------------//
+    for (auto c: file_as_chars) {
+        if (c == '\n') {
+            data += ' ';
+        }
+        else {
+            data += c;
+        }
+    }
+
+    return data;
+}
+
+
+///------------------------------------------------------------------------------------------------------------------///
 
 auto read_txt( const std::string &file_name ){
     std::string content, word;
@@ -153,6 +168,8 @@ auto count_words( boost::locale::boundary::ssegment_index &words_list ){
 auto trigger_function(){
 //    one thread function
 
+
+
     std::string tex = read_txt("../file1.txt"); // your filepath here
     auto txts = slice_text(tex);
     auto dick = count_words(txts);
@@ -168,6 +185,15 @@ auto trigger_function(){
 int main() {
 
     trigger_function();
+
+    ///TEST
+    ///std::ifstream file("../file1.txt");
+    ///auto f = read_txt_into_memory(file);
+    ///auto sf = file_as_str(f);
+
+    ///std::cout << "As str" << std::endl << sf << std::endl;
+    ///std::string s;
+    ///std::cout << s.max_size();
 
 //	std::string file = "/home/vlad/Desktop/2_year/ACS/lab_3/a/counting_words/file.zip";
 //	auto buf = read_file_into_memory(file);
