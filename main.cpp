@@ -258,24 +258,26 @@ auto read_archive( const char *filename ){
 
     a = archive_read_new();
     archive_read_support_filter_all(a);
+    std::string content;
 
     archive_read_support_format_all(a);
     archive_read_open_filename(a, filename, 10240);
-    std::vector<std::string> list;
 
     while (archive_read_next_header(a, &entry) == ARCHIVE_OK) {
 
         auto size = archive_entry_size(entry);
-        auto dest = std::string(size, 0);
+        content = std::string(size, 0);
 
-        archive_read_data(a, &dest[0], dest.size());
+        archive_read_data(a, &content[0], content.size());
         archive_read_data_skip(a);
-        list.push_back( dest );
     }
     archive_read_free(a);
-    return list;
+    return content;
 }
 
+auto file_definer( const std::string &filename ){
+    return filename.substr(filename.find_last_of(".") + 1) == "txt";
+}
 
 ///------------------------------------------------------------------------------------------------------------------///
 /// MAIN PROGRAM
