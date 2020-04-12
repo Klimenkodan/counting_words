@@ -1,3 +1,0 @@
-/home/romanblahuta/UCU/Programming/AKC/count_words/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/home/romanblahuta/UCU/Programming/AKC/count_words/cmake-build-debug/CMakeFiles/counting_words1.dir
-/home/romanblahuta/UCU/Programming/AKC/count_words/cmake-build-debug/CMakeFiles/edit_cache.dir

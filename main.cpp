@@ -252,6 +252,30 @@ void parallel(int threadN, const std::string &input, const std::string &out_n, c
     sort_given_comparator(std::ref(allMaps[0]), out_a, compare_strings);
 }
 
+auto read_archive( const char *filename ){
+    struct archive *a;
+    struct archive_entry *entry;
+
+    a = archive_read_new();
+    archive_read_support_filter_all(a);
+
+    archive_read_support_format_all(a);
+    archive_read_open_filename(a, filename, 10240);
+    std::vector<std::string> list;
+
+    while (archive_read_next_header(a, &entry) == ARCHIVE_OK) {
+
+        auto size = archive_entry_size(entry);
+        auto dest = std::string(size, 0);
+
+        archive_read_data(a, &dest[0], dest.size());
+        archive_read_data_skip(a);
+        list.push_back( dest );
+    }
+    archive_read_free(a);
+    return list;
+}
+
 
 ///------------------------------------------------------------------------------------------------------------------///
 /// MAIN PROGRAM
