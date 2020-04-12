@@ -67,7 +67,7 @@ std::tuple<std::string, std::string, std::string, int> configurate(std::string f
 
 bool validateConfigs(std::tuple<std::string, std::string, std::string, int> configs) {
     return (std::get<0>(configs) != "///") && (std::get<1>(configs) != "///") && (std::get<2>(configs) != "///") &&
-           (std::get<3>(configs) != -1);
+           (std::get<3>(configs) > 0);
 }
 
 ///------------------------------------------------------------------------------------------------------------------///
@@ -125,24 +125,6 @@ std::string file_as_str(std::vector<char> file_as_chars) {
 
 ///------------------------------------------------------------------------------------------------------------------///
 
-auto read_txt(const std::string &file_name) {
-    std::string content, word;
-    std::ifstream file;
-
-    file.open(file_name);
-    if (!file) {
-        std::cout << "Unable to open file";
-        exit(1);
-    }
-
-    while (file >> word) {
-        content += word + " ";
-    }
-
-    file.close();
-    return content;
-}
-
 auto slice_text(std::string &text) {
 
     boost::locale::generator gen;
@@ -164,32 +146,6 @@ auto slice_text(std::string &text) {
     return vec_words;
 }
 
-
-/*
-std::vector<std::string> split_equally(const std::string &str, int n) {
-    std::vector<std::string> res;
-
-    int startIdx = 0;
-    for (int i = 0; i < n; i++) {
-        if (i == n - 1) {
-            res.push_back(str.substr(startIdx));
-        } else {
-            int increment = 0;
-            int sliceLen = str.length() / n;
-            while (str[startIdx + sliceLen + increment] != ' ') {
-                increment++;
-            }
-            increment++;
-            res.push_back(str.substr(startIdx, sliceLen + increment));
-            startIdx = startIdx + sliceLen + increment;
-        }
-    }
-
-    return res;
-}
-*/
-
-
 void count_words(std::vector<std::string> &words_list, std::map<std::string, int> &dictionary, int start, int end) {
 
     std::string word;
@@ -199,11 +155,35 @@ void count_words(std::vector<std::string> &words_list, std::map<std::string, int
     }
 }
 
+bool compare_strings(const std::pair<std::string, int>& pair1, const std::pair<std::string, int>& pair2) {
+    return pair1.first < pair2.first;
+}
+
+bool compare_pairs_results(const std::pair<std::string, int>& pair1, const std::pair<std::string, int>& pair2) {
+    return pair1.second > pair2.second;
+}
+
+
+
+template<typename funcT>
+int sort_given_comparator(const std::map<std::string, int>& words, const std::string& file_name, funcT comparator) {
+    std::vector<std::pair<std::string, int>> words_vector (words.begin(), words.end());
+    sort(words_vector.begin(), words_vector.end(), comparator);
+    std::cout << file_name <<std::endl;
+    std::ofstream out(file_name);
+    if (out.is_open()) {
+        for (const auto &word : words_vector) {
+            out << word.first << "  " << std::to_string(word.second) << "\n";
+        }
+        out.close();
+        return 0;
+    }
+    return -1;
+}
+
 void trigger_function(int threadN, const std::string &input, const std::string &out_n, const std::string &out_a) {
     //one thread function
 
-    //TODO many threads
-    //TODO file output not console
     std::ofstream bya(out_a);
     std::ofstream byn(out_n);
 
@@ -217,10 +197,8 @@ void trigger_function(int threadN, const std::string &input, const std::string &
 
     count_words(txts, dick, 0, txts.size());
 
-    //TODO WRITE INTO FILES!
-    for (auto x: dick) {
-        std::cout << x.first << " " << x.second << "\n";
-    }
+    sort_given_comparator(std::ref(dick), out_n, compare_pairs_results);
+    sort_given_comparator(std::ref(dick), out_a, compare_strings);
 }
 
 void mergeMaps(std::vector<std::map<std::string, int>> &allMaps) {
@@ -249,7 +227,6 @@ void parallel(int threadN, const std::string &input, const std::string &out_n, c
     std::string tex = file_as_str(data);
 
     ///pass slices to threads
-    //std::vector<std::string> slices = split_equally(tex, threadN);
     std::vector<std::thread> threads;
 
     std::vector<std::string> sss = slice_text(tex);
@@ -271,9 +248,8 @@ void parallel(int threadN, const std::string &input, const std::string &out_n, c
     ///merge maps
     mergeMaps(allMaps);
 
-    for (const auto& x: allMaps[0]) {
-        std::cout << x.first << " ---> " << x.second << "\n";
-    }
+    sort_given_comparator(std::ref(allMaps[0]), out_n, compare_pairs_results);
+    sort_given_comparator(std::ref(allMaps[0]), out_a, compare_strings);
 }
 
 
@@ -305,10 +281,14 @@ int main(int argc, char *argv[]) {
     std::cout << std::get<3>(configs) << std::endl;
 
 
-    parallel(std::get<3>(configs), std::get<0>(configs), std::get<2>(configs), std::get<1>(configs));
-
-
-    std::cout << "DONE";
+    if (std::get<3>(configs) == 1) {
+        std::cout << "SEQ\n";
+        trigger_function(std::get<3>(configs), std::get<0>(configs), std::get<2>(configs), std::get<1>(configs));
+    }
+    else {
+        std::cout << "PAR\n";
+        parallel(std::get<3>(configs), std::get<0>(configs), std::get<2>(configs), std::get<1>(configs));
+    }
     return 0;
 }
 

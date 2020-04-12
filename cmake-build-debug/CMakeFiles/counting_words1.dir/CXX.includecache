@@ -27,6 +27,8 @@ tuple
 -
 vector
 -
+filesystem
+-
 boost/locale.hpp
 -
 boost/locale/boundary.hpp
@@ -36,5 +38,7 @@ boost/locale/conversion.hpp
 fstream
 -
 map
+-
+thread
 -
 
