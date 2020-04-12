@@ -22,6 +22,9 @@
 
 ///------------------------------------------------------------------------------------------------------------------///
 auto read_archive( const char *filename ){
+
+    std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
+
     struct archive *a;
     struct archive_entry *entry;
 
@@ -41,6 +44,11 @@ auto read_archive( const char *filename ){
         archive_read_data_skip(a);
     }
     archive_read_free(a);
+
+    std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> time_span = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
+    std::cout << "Loading: " << time_span.count() << "\n";
+
     return content;
 }
 
@@ -102,9 +110,15 @@ bool validateConfigs(std::tuple<std::string, std::string, std::string, int> conf
 
 auto inline read_file_into_memory(const std::string &file_name) {
 
+    std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
+
     std::ifstream raw_file(file_name, std::ios::binary);
     auto buffer = static_cast<std::ostringstream &>(
             std::ostringstream{} << raw_file.rdbuf()).str();
+
+    std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> time_span = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
+    std::cout << "Loading: " << time_span.count() << "\n";
 
     return buffer;
 
@@ -155,7 +169,6 @@ template<typename funcT>
 int sort_given_comparator(const std::map<std::string, int>& words, const std::string& file_name, funcT comparator) {
     std::vector<std::pair<std::string, int>> words_vector (words.begin(), words.end());
     sort(words_vector.begin(), words_vector.end(), comparator);
-    std::cout << file_name <<std::endl;
     std::ofstream out(file_name);
     if (out.is_open()) {
         for (const auto &word : words_vector) {
@@ -170,6 +183,8 @@ int sort_given_comparator(const std::map<std::string, int>& words, const std::st
 void trigger_function(int threadN, const std::string &input, const std::string &out_n, const std::string &out_a) {
     //one thread function
 
+    std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
+
     std::ofstream bya(out_a);
     std::ofstream byn(out_n);
 
@@ -181,10 +196,14 @@ void trigger_function(int threadN, const std::string &input, const std::string &
 
     sort_given_comparator(std::ref(dick), out_n, compare_pairs_results);
     sort_given_comparator(std::ref(dick), out_a, compare_strings);
+
+    std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> time_span = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
+    std::cout << "Analyzing: " << time_span.count() << "\n";
 }
 
 void mergeMaps(std::vector<std::map<std::string, int>> &allMaps) {
-    for (int i = 0; i < allMaps.size(); i++) {
+    for (int i = 1; i < allMaps.size(); i++) {
         for (const auto &x: allMaps[i]) {
             allMaps[0][x.first] += x.second;
         }
@@ -193,6 +212,8 @@ void mergeMaps(std::vector<std::map<std::string, int>> &allMaps) {
 
 
 void parallel(int threadN, const std::string &input, const std::string &out_n, const std::string &out_a) {
+
+    std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
 
     ///vector of maps
     std::vector<std::map<std::string, int>> allMaps;
@@ -229,12 +250,18 @@ void parallel(int threadN, const std::string &input, const std::string &out_n, c
 
     sort_given_comparator(std::ref(allMaps[0]), out_n, compare_pairs_results);
     sort_given_comparator(std::ref(allMaps[0]), out_a, compare_strings);
+
+    std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> time_span = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
+    std::cout << "Analyzing: " << time_span.count() << "\n";
 }
 
 ///------------------------------------------------------------------------------------------------------------------///
 /// MAIN PROGRAM
 
 int main(int argc, char *argv[]) {
+
+    std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
 
     std::string conf = "NONE";
     if (argc > 2) {
@@ -255,13 +282,15 @@ int main(int argc, char *argv[]) {
     }
 
     if (std::get<3>(configs) == 1) {
-        std::cout << "SEQ\n";
         trigger_function(std::get<3>(configs), std::get<0>(configs), std::get<2>(configs), std::get<1>(configs));
-    }
-    else {
-        std::cout << "PAR\n";
+    } else {
         parallel(std::get<3>(configs), std::get<0>(configs), std::get<2>(configs), std::get<1>(configs));
     }
+
+    std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> time_span = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
+    std::cout << "Total: " << time_span.count() << "\n";
+
     return 0;
 }
 ///------------------------------------------------------------------------------------------------------------------///
