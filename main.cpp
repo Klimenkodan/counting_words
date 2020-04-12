@@ -165,15 +165,23 @@ auto count_words( boost::locale::boundary::ssegment_index &words_list ){
     return dictionary;
 }
 
-auto trigger_function(){
-//    one thread function
+auto trigger_function(int threadN, std::string input, std::string out_n, std::string out_a){
+    //one thread function
 
+    //TODO many threads
+    //TODO file output not console
+    std::ofstream bya(out_a);
+    std::ofstream byn(out_n);
 
+    std::ifstream inp(input); // your filepath here
 
-    std::string tex = read_txt("../file1.txt"); // your filepath here
+    auto data = read_txt_into_memory(inp);
+    std::string tex = file_as_str(data);
+
     auto txts = slice_text(tex);
     auto dick = count_words(txts);
 
+    //WRITE INTO FILES!
     for (auto x: dick){
         std::cout << " " << x.first << " " << x.second << "\n";
     }
@@ -182,9 +190,31 @@ auto trigger_function(){
 ///------------------------------------------------------------------------------------------------------------------///
 /// MAIN PROGRAM
 
-int main() {
+int main(int argc, char *argv[]) {
 
-    trigger_function();
+    std::string conf = "NONE";
+    if (argc > 2) {
+        std::cout << "Too many arguments. There should be 2 cmd arguments.\n";
+        return 1;
+    } else if (argc < 2) {
+        //TODO find file and make conf = found_file
+    }
+    else {
+        conf = argv[1];
+    }
+    std::tuple<std::string, std::string, std::string, int> configs = configurate(conf);
+    if (!validateConfigs(configs)) {
+        std::cout << conf << "   <---- config file\n";
+        std::cout << std::get<0>(configs) << std::endl;
+        std::cout << std::get<1>(configs) << std::endl;
+        std::cout << std::get<2>(configs) << std::endl;
+        std::cout << std::get<3>(configs) << std::endl;
+        std::cout << "Config error\n";
+        return 1;
+    }
+    trigger_function(std::get<3>(configs), std::get<0>(configs), std::get<2>(configs), std::get<1>(configs));
+
+    //boost::filesystem::exists("";)
 
     ///TEST
     ///std::ifstream file("../file1.txt");
