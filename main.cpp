@@ -18,8 +18,35 @@
 #include <boost/locale/boundary.hpp>
 #include <boost/locale/conversion.hpp>
 #include <fstream>
-#include <map>
 #include <thread>
+
+///------------------------------------------------------------------------------------------------------------------///
+auto read_archive( const char *filename ){
+    struct archive *a;
+    struct archive_entry *entry;
+
+    a = archive_read_new();
+    archive_read_support_filter_all(a);
+    std::string content;
+
+    archive_read_support_format_all(a);
+    archive_read_open_filename(a, filename, 10240);
+
+    while (archive_read_next_header(a, &entry) == ARCHIVE_OK) {
+
+        auto size = archive_entry_size(entry);
+        content = std::string(size, 0);
+
+        archive_read_data(a, &content[0], content.size());
+        archive_read_data_skip(a);
+    }
+    archive_read_free(a);
+    return content;
+}
+
+auto file_definer( const std::string &filename ){
+    return filename.substr(filename.find_last_of(".") + 1) == "txt";
+}
 
 ///------------------------------------------------------------------------------------------------------------------///
 /// CONFIG FUNCTIONS
@@ -82,47 +109,6 @@ auto inline read_file_into_memory(const std::string &file_name) {
     return buffer;
 
 }
-
-
-template<typename CharT, typename Traits,
-        typename Allocator = std::allocator<CharT>>
-
-auto read_txt_into_memory(std::basic_ifstream<CharT, Traits> &in, Allocator alloc = {}) {
-    using std::begin;
-    using std::end;
-
-    auto const chunk_size = std::size_t{BUFSIZ};
-
-    auto container = std::vector<CharT, Allocator>(
-            std::move(alloc));
-
-    auto chunk = std::array<char, chunk_size>{};
-
-    while (
-            in.read(chunk.data(), chunk.size()) ||
-            in.gcount())
-        container.insert(end(container),
-                         begin(chunk),
-                         begin(chunk) + in.gcount());
-
-    return container;
-}
-
-std::string file_as_str(std::vector<char> file_as_chars) {
-    std::string data = "";
-
-    for (auto c: file_as_chars) {
-        if (c == '\n') {
-            data += ' ';
-        } else {
-            data += c;
-        }
-    }
-
-    return data;
-}
-
-
 ///------------------------------------------------------------------------------------------------------------------///
 
 auto slice_text(std::string &text) {
@@ -187,11 +173,7 @@ void trigger_function(int threadN, const std::string &input, const std::string &
     std::ofstream bya(out_a);
     std::ofstream byn(out_n);
 
-    std::ifstream inp(input); // your filepath here
-
-    auto data = read_txt_into_memory(inp);
-    std::string tex = file_as_str(data);
-
+    auto tex = file_definer(input) ? read_file_into_memory(input): read_archive( input.c_str() );
     auto txts = slice_text(tex);
     std::map<std::string, int> dick;
 
@@ -222,13 +204,10 @@ void parallel(int threadN, const std::string &input, const std::string &out_n, c
     ///split words
     std::ofstream bya(out_a);
     std::ofstream byn(out_n);
-    std::ifstream inp(input);
-    auto data = read_txt_into_memory(inp);
-    std::string tex = file_as_str(data);
+    auto tex = file_definer(input) ? read_file_into_memory(input): read_archive( input.c_str() );
 
     ///pass slices to threads
     std::vector<std::thread> threads;
-
     std::vector<std::string> sss = slice_text(tex);
     int start;
     int end;
@@ -250,33 +229,6 @@ void parallel(int threadN, const std::string &input, const std::string &out_n, c
 
     sort_given_comparator(std::ref(allMaps[0]), out_n, compare_pairs_results);
     sort_given_comparator(std::ref(allMaps[0]), out_a, compare_strings);
-}
-
-auto read_archive( const char *filename ){
-    struct archive *a;
-    struct archive_entry *entry;
-
-    a = archive_read_new();
-    archive_read_support_filter_all(a);
-    std::string content;
-
-    archive_read_support_format_all(a);
-    archive_read_open_filename(a, filename, 10240);
-
-    while (archive_read_next_header(a, &entry) == ARCHIVE_OK) {
-
-        auto size = archive_entry_size(entry);
-        content = std::string(size, 0);
-
-        archive_read_data(a, &content[0], content.size());
-        archive_read_data_skip(a);
-    }
-    archive_read_free(a);
-    return content;
-}
-
-auto file_definer( const std::string &filename ){
-    return filename.substr(filename.find_last_of(".") + 1) == "txt";
 }
 
 ///------------------------------------------------------------------------------------------------------------------///
@@ -301,11 +253,6 @@ int main(int argc, char *argv[]) {
         std::cout << "Config error\n";
         return 1;
     }
-    std::cout << std::get<0>(configs) << std::endl;
-    std::cout << std::get<1>(configs) << std::endl;
-    std::cout << std::get<2>(configs) << std::endl;
-    std::cout << std::get<3>(configs) << std::endl;
-
 
     if (std::get<3>(configs) == 1) {
         std::cout << "SEQ\n";
@@ -317,5 +264,4 @@ int main(int argc, char *argv[]) {
     }
     return 0;
 }
-
 ///------------------------------------------------------------------------------------------------------------------///
